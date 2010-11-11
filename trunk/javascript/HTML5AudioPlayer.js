@@ -164,13 +164,27 @@ function buildingList(xml)
 	var index = 0;
 	$('#playlist').html('');
 	$(xml).find('track').each(function(){
-		$('#playlist').append($('<li>').append($('<a>').html($(this).find('title').text()).attr('href','javascript:load('+index+')').css('pointer','cursor')));
+		$('#playlist').append(
+			$('<li>').append(
+				$('<a>').html($(this).find('title').text())
+					.attr('href','javascript:load('+index+')')
+					.css('pointer','cursor')
+				).data('index', index)
+				.bind('dblclick', function(){del($(this).data('index'));})
+				.css('cursor','pointer')
+			);
 		list.push({title:$(this).find('title').text(),loc:$(this).find('location').text()});
 		index++;
 	});
-	$('#playlist li:even').addClass('even');
+	repaintList();
 //	historyManager.modify(list.length);
 	historyManaget = new History(list.length, historyFactor);
+}
+
+function repaintList()
+{
+	$('#playlist li').removeClass('even');
+	$('#playlist li:even').addClass('even');
 }
 
 function load( index )
@@ -179,11 +193,10 @@ function load( index )
 	$('li.playing').removeClass('playing');
 	if( list && list.length > 0 )
 	{
-		var scroll = $('ul').scrollTop() + $('#playlist > li').eq(index).addClass('playing').position().top - $('#playlist').offset().top - $('#playlist').height()/2;
-		$('ul').animate({'scrollTop':scroll},500);
+		moveScroll( index );
 		$('#mediaplayer').attr('src',list[index].loc);
 		$('#mediaplayer')[0].load();
-		$('#playing_name').html(list[index].title);
+		$('#playing_name').html(list[index].title).click(moveScroll);
 		play();
 		$('#mediaplayer')[0].addEventListener("ended", next, false);
 
@@ -197,12 +210,29 @@ function load( index )
 	historyManager.push(currentIndex);
 }
 
+function moveScroll( index ) {
+	if( typeof( index ) != 'number' )
+		index = currentIndex;
+	var i = 0;
+	$('#playlist > li').each(function(){if($(this).data('index')==index){return false;}i++;});
+	index = i;
+	var scroll = $('ul').scrollTop() + $('#playlist > li').eq(index).addClass('playing').position().top - $('#playlist').offset().top - $('#playlist').height()/2;
+	$('ul').animate({'scrollTop':scroll},500);
+}
+
 function add( title, filepath )
 {
 	var index = list.length;
 	list.push({'title':title,'loc':filepath});
 	$('#playlist').append($('<li>').append($('<a>').html(title).attr('href','javascript:load('+index+')').css('pointer','cursor')));
-	$('#playlist li:even').addClass('even');
+	repaintList();
 	historyManager.modify(list.length);
+}
+
+function del( index )
+{
+	$('#playlist > li').each(function(){if($(this).data('index')==index)$(this).detach();});
+	delete list[index];
+	repaintList();
 }
 

@@ -7,8 +7,10 @@ function detectKeyDown(e) {
 
     if( parent.player ) 
         p = parent.player.document.getElementById('mediaplayer');
-    else
+    else if( typeof(w) != 'undefined' )
         p = w.document.getElementById('mediaplayer');
+	else
+		p = window;
     
     if( evt.keyCode == 90 ) {p.sendEvent('prev', 'true');} // z
     if( evt.keyCode == 88 ) {p.sendEvent('play', '2');} // x

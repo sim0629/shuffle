@@ -155,7 +155,8 @@ if( !empty($_GET['mp3']) ) { // play mp3
 				$filepar = urlencode(stripslashes($filepar));
 				$filepar = str_replace('&', '%26', $filepar);
 				$s = $s." <li><input type=\"checkbox\" value=\"$filepar\" name=\"F:$filepar\" />";
-				$s = $s." <a class=\"open-external\" onclick=\"refresh_player('$phpself?mp3=$filepar');return false;\">$filename</a></li>\n";
+				$s = $s." <a class=\"open-external\" onclick=\"refresh_player('$phpself?mp3=$filepar');return false;\">$filename</a>\n";
+				$s = $s." <a href=\"#\" onclick=\"parent.player.add('".urldecode($pathinfo['filename'])."','".$mp3url."/".urldecode($f)."');return false;\">A</a></li>\n";
 			}
 		}
 		$s = $s."</ul>\n";
