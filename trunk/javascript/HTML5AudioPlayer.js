@@ -106,30 +106,41 @@ function next() {
 	}
 }
 
+var changingVolume = false;
+var old_mousemove = null;
+var old_mouseup = null;
 function shuffle(){bShuffle=!bShuffle;if(bShuffle){$('#bShuf').css('background-position','-141px -18px');}else{$('#bShuf').css('background-position','-141px 0px');}}
 function seek(evt)
 {
 	var e = (typeof(evt)=='undefined')?event:evt;
 	var offset = $('#progress').offset();
 	var total = $('#mediaplayer')[0].duration;
-	$('#mediaplayer')[0].currentTime = parseFloat(e.x - offset.left)/barWidth * total;
+	if( $('#mediaplayer').length > 0 )
+		$('#mediaplayer')[0].currentTime = parseFloat(e.x - offset.left)/barWidth * total;
 }
-function changeVolume()
+function changeVolume(evt)
 {
-	$('#volume')
-		.mousemove(changeVolumeMoving)
-		.mouseup(changeVolumeFinalize);
+	old_mousemove = window.onmousemove;
+	changingVolume = true;
+	changeVolumeMoving(evt);
+	$(window).mousemove(changeVolumeMoving);
 }
 function changeVolumeMoving(evt)
 {
-	var e = (typeof(evt)=='undefined')?event:evt;
-//	var offset = $('#volume').offset();
-	var volume = parseFloat(e.offsetX)/barWidth;
-	if( volume < 0 )
-		volume = 0;
-	else if( volume > 1.0 )
-		volume = 1.0;
-	changeVolumeTo(volume);
+	if( changingVolume ) {
+		var e = (typeof(evt)=='undefined')?event:evt;
+	//	var offset = $('#volume').offset();
+		var volume = parseFloat(e.offsetX)/barWidth;
+		if( volume < 0 )
+			volume = 0;
+		else if( volume > 1.0 )
+			volume = 1.0;
+		changeVolumeTo(volume);
+		old_mouseup = window.onmouseup;
+		$(window).mouseup(changeVolumeFinalize);
+	}
+	if( old_mousemove )
+		old_mousemove(evt);
 }
 function changeVolumeTo(vol)
 {
@@ -138,9 +149,13 @@ function changeVolumeTo(vol)
 	$('#mediaplayer')[0].volume = 0.1;
 	$('#mediaplayer')[0].volume = vol;
 }
-function changeVolumeFinalize()
+function changeVolumeFinalize(e)
 {
-	$('#volume').unbind('mousemove').bind('mousedown',function(evt){changeVolume(evt);});
+	changingVolume = false;
+
+	if( old_mouseup )
+		old_mouseup(e);
+	//$('#volume').unbind('mousemove').bind('mousedown',function(evt){changeVolume(evt);});
 }
 function loop()
 {

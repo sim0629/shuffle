@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-<title>Shuffle! TEST</title>
+<title>Shuffle! (HTML5)</title>
 <style type="text/css">
 *{max-width:400px;margin:0;padding:0;font-family:Tahoma;font-size:10pt;}
 #wrapper{height:45px;border-bottom:5px solid #ddd;}
@@ -68,6 +68,8 @@ $(function(){
 	$('#playing_status').click(function(){
 		$.get('<?=$loadfile?>?'+(new Date().getTime()),{},function(data,e,xhr){buildingList(xhr.responseXML);load();},'xml');
 	}).css('cursor','pointer').click();
+
+	$('#volume').mousedown(changeVolume);
 });
 </script>
 </body>
