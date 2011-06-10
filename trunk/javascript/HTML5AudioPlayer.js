@@ -207,8 +207,8 @@ function buildingList(xml)
 
 function repaintList()
 {
-	$('#playlist li').removeClass('even');
-	$('#playlist li:even').addClass('even');
+	$('#playlist > li').removeClass('even');
+	$('#playlist > li:even').addClass('even');
 }
 
 function load( index )
@@ -248,16 +248,21 @@ function add( title, filepath )
 {
 	var index = list.length;
 	list.push({'title':title,'loc':filepath});
-	$('#playlist').append($('<li>').append($('<a>').html(title).attr('href','javascript:load('+index+')').css('pointer','cursor')));
+	var lastIndex = $('#playlist > li').last().data('index');
+	$('#playlist').append(
+			$('<li>').append($('<a>').html(title).attr('href','javascript:load('+index+')').css('pointer','cursor'))
+				.data('index',lastIndex+1)
+				.bind('dblclick', function(){del($(this).data('index'));})
+				.css('cursor','pointer')
+		);
 	repaintList();
 	historyManager.modify(list.length);
 }
 
 function del( index )
 {
-	$('#playlist > li').each(function(){if($(this).data('index')==index)$(this).detach();else if($(this).data('index')>index)$(this).data('index')-=1;});
+	$('#playlist > li').each(function(){if($(this).data('index')==index)$(this).detach();else if($(this).data('index')>index)$(this).data('index')-=1;repaintList();});
 	list.splice(index,1); // erase
-	repaintList();
 	historyManager.del(index);
 	historyManager.modify(list.length);
 }
