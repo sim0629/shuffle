@@ -132,7 +132,7 @@ if( !empty($_GET['mp3']) ) { // play mp3
 				$l = $_GET['l'].'/'.$f;
 			else
 				$l = $f;
-			$l = str_replace('&', '%26', $l);
+			$l = str_replace('#', '%'.dechex(ord('#')), str_replace('&', '%26', $l));
 			$ll = $_GET['l'];
 			$f = urlencode($f);
 			$s = $s." <li><input type=\"checkbox\" value=\"$f\" name=\"D:$f\" />";
@@ -153,10 +153,10 @@ if( !empty($_GET['mp3']) ) { // play mp3
 				else
 					$filepar = $filename;
 				$filepar = urlencode(stripslashes($filepar));
-				$filepar = str_replace('&', '%26', $filepar);
+				$filepar = str_replace('#', '%'.dechex(ord('#')), str_replace('&', '%26', $filepar));
 				$s = $s." <li><input type=\"checkbox\" value=\"$filepar\" name=\"F:$filepar\" />";
 				$s = $s." <a class=\"open-external\" onclick=\"refresh_player('$phpself?mp3=$filepar');return false;\">$filename</a>\n";
-				$s = $s." <a href=\"#\" onclick=\"parent.player.add('".urldecode($pathinfo['filename'])."','".$mp3url."/".urldecode($f)."');return false;\">A</a></li>\n";
+				$s = $s." <a onclick=\"parent.player.add('".urldecode($pathinfo['filename'])."','".convert_to($mp3url."/".$f)."');return false;\">A</a></li>\n";
 			}
 		}
 		$s = $s."</ul>\n";
@@ -182,7 +182,7 @@ function convert_to($in_str, $ch = '%') {
 			$out_str = $out_str . $ch . dechex($int);
 		}
 	}
-	return str_replace('&', '&amp;', stripslashes($out_str));
+	return str_replace('#', '%'.dechex(ord('#')), str_replace('&', '&amp;', stripslashes($out_str)));
 }
 
 function decode($str) {
@@ -232,7 +232,7 @@ function listing($file_handle, $path, $url, $rel, $prune = false) {
 		}
 		$pathinfo = pathinfo(urlencode($file));
 		if( isAcceptable(strtolower($pathinfo['extension'])) ) {
-			fwrite($file_handle, "  <track>\n   <title>".str_replace('&', '&amp;', urldecode($pathinfo['filename']))."</title>\n   <location>".convert_to($url.'/'.$file)."</location>\n  </track>\n");
+			fwrite($file_handle, "  <track>\n   <title>".str_replace('#', '%'.dechex(ord('#')), str_replace('&', '&amp;', urldecode($pathinfo['filename'])))."</title>\n   <location>".convert_to($url.'/'.$file)."</location>\n  </track>\n");
 		}
 	}
 }
@@ -294,7 +294,7 @@ function generate_path($path, $phpself) {
 		$acc = array();
 		foreach( $array as $elem ) {
 			array_push($acc, $elem);
-			$ac = implode("/", $acc);
+			$ac = convert_to(implode("/", $acc));
 			array_push($s, "<a href=\"$phpself?l=$ac\">$elem</a>");
 		}
 	}
