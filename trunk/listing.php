@@ -8,8 +8,8 @@ require_once("phplib/Sajax.php");
 // CONSTANT DEFINITION
 $url		= './';
 
-$mp3url		= '/mp3/';
-$mp3path	= '/home/hitel000/public_html/mp3/';
+$mp3url		= '/music/';
+$mp3path	= '/home/hitel00000/Music/';
 
 $swfurl		= $url.'swf/';
 $swfobject	= $swfurl.'swfobject.js';
@@ -116,7 +116,7 @@ if( !empty($_GET['mp3']) ) { // play mp3
 			array_push($dirs, $f);
 		} else if( is_file($mp3path.'/'.$f) ) {
 			$pathinfo = pathinfo($f);
-			if( strtolower($pathinfo['extension']) == 'mp3' ) {
+			if( isAcceptable(strtolower($pathinfo['extension'])) ) {
 				array_push($files, $f);
 			}
 		}
@@ -146,7 +146,7 @@ if( !empty($_GET['mp3']) ) { // play mp3
 		$s = $s."<ul id=\"file-list\">\n";
 		foreach( $files as $f ) {
 			$pathinfo = pathinfo(urlencode($f));
-			if( strtolower($pathinfo['extension']) == 'mp3' ) {
+			if( isAcceptable(strtolower($pathinfo['extension'])) ) {
 				$filename = urldecode($pathinfo['filename']);
 				if( $_GET['l'] != "" )
 					$filepar = $_GET['l'].'/'.$filename;
@@ -231,7 +231,7 @@ function listing($file_handle, $path, $url, $rel, $prune = false) {
 			listing($file_handle, $path.'/'.$file, $url.'/'.$file, $rel.$file);
 		}
 		$pathinfo = pathinfo(urlencode($file));
-		if( strtolower($pathinfo['extension']) == 'mp3' ) {
+		if( isAcceptable(strtolower($pathinfo['extension'])) ) {
 			fwrite($file_handle, "  <track>\n   <title>".str_replace('&', '&amp;', urldecode($pathinfo['filename']))."</title>\n   <location>".convert_to($url.'/'.$file)."</location>\n  </track>\n");
 		}
 	}
@@ -288,7 +288,7 @@ function onpost($r, $rootdir, $curdir, $arr, $l) {
 function generate_path($path, $phpself) {
 	$s = array();
 	$path = stripslashes($path);
-	array_push($s, "<a href=\"$phpself\">uriel</a>");
+	array_push($s, "<a href=\"$phpself\">{$_SERVER["SERVER_NAME"]}</a>");
 	if( $path != "" ) {
 		$array = explode("/", $path);
 		$acc = array();
@@ -300,4 +300,13 @@ function generate_path($path, $phpself) {
 	}
 	return implode("/", $s);
 }
+
+function isAcceptable( $ext ) {
+	$HTML5 = (ereg( '(Chrome|Safari)', $_SERVER['HTTP_USER_AGENT'] ));
+	if( $HTML5 )
+		return $ext == 'mp3' or $ext == 'ogg';
+	else
+		return $ext == 'mp3';
+}
+
 ?>

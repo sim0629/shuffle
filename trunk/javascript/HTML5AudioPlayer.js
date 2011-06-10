@@ -36,8 +36,17 @@ function History(origLen, factor) {
 	};
 
 	this.del = function(index) {
+		var deleted = new Array();
 		for( var i in this.list ) {
-			this.list[i];
+			if( this.list[i] > index ) {
+				this.list[i]--;
+			} else if( this.list[i] == index ) {
+				delete this.list[i];
+			}
+		}
+		deleted = deleted.sort(function(a,b){return a>b;});
+		for( var i in deleted ) {
+			this.list.splice(deleted[i],1);
 		}
 	};
 }
@@ -193,7 +202,7 @@ function buildingList(xml)
 	});
 	repaintList();
 //	historyManager.modify(list.length);
-	historyManaget = new History(list.length, historyFactor);
+	historyManager = new History(list.length, historyFactor);
 }
 
 function repaintList()
@@ -229,7 +238,7 @@ function moveScroll( index ) {
 	if( typeof( index ) != 'number' )
 		index = currentIndex;
 	var i = 0;
-	$('#playlist > li').each(function(){if($(this).data('index')==index){return false;}i++;});
+	$('#playlist > li').each(function(){if($(this).data('index')>=index){return false;}i++;});
 	index = i;
 	var scroll = $('ul').scrollTop() + $('#playlist > li').eq(index).addClass('playing').position().top - $('#playlist').offset().top - $('#playlist').height()/2;
 	$('ul').animate({'scrollTop':scroll},500);
@@ -246,8 +255,10 @@ function add( title, filepath )
 
 function del( index )
 {
-	$('#playlist > li').each(function(){if($(this).data('index')==index)$(this).detach();});
-	delete list[index];
+	$('#playlist > li').each(function(){if($(this).data('index')==index)$(this).detach();else if($(this).data('index')>index)$(this).data('index')-=1;});
+	list.splice(index,1); // erase
 	repaintList();
+	historyManager.del(index);
+	historyManager.modify(list.length);
 }
 
