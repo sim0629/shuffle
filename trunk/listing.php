@@ -2,14 +2,12 @@
 // HEADER DEFINITION
 $current_encoding = 'UTF-8';
 header("Content-type: text/html; charset=$current_encoding");
-require_once("phplib/Sajax.php");
+require_once "phplib/Sajax.php";
+require_once "config.php";
 
 
 // CONSTANT DEFINITION
 $url		= './';
-
-$mp3url		= '/music/';
-$mp3path	= '/home/hitel00000/Music/';
 
 $swfurl		= $url.'swf/';
 $swfobject	= $swfurl.'swfobject.js';
@@ -37,9 +35,11 @@ if( !empty($_GET['d']) ) {
 	if( $_GET['d'] == '..' ) {
 		die("forbidden");
 	}
+	$mp3url = MUSIC_URL;
+	$mp3path = MUSIC_LOCAL_PATH;
 	if( $_GET['l'] != "" ) {
-		$mp3path = $mp3path.$_GET['l'].'/';
-		$mp3url = $mp3url.$_GET['l'].'/';
+		$mp3path = MUSIC_LOCAL_PATH.$_GET['l'].'/';
+		$mp3url = MUSIC_URL.$_GET['l'].'/';
 	}
 	$path = $mp3path.$_GET['d'];
 	$url = $mp3url.$_GET['d'];
@@ -55,7 +55,7 @@ if( !empty($_GET['d']) ) {
 
 if( !empty($_GET['mp3']) ) { // play mp3
 	$s = stripslashes($_GET['mp3']);
-	$mp3 = iconv($current_encoding, 'UTF-8//IGNORE', $mp3url.$_GET['mp3'].'.mp3');
+	$mp3 = iconv($current_encoding, 'UTF-8//IGNORE', MUSIC_URL.$_GET['mp3'].'.mp3');
 	$s .= '<div id="mp3_div"><a href="http://www.macromedia.com/go/getflashplayer">Get the Flash Player</a> to see this player.</div>
 		<script type="text/javascript" src="'.$swfobject.'"></script>
 		<script type="text/javascript">
@@ -95,10 +95,12 @@ if( !empty($_GET['mp3']) ) { // play mp3
 } else { // listing directory
 	$phpself = $_SERVER['PHP_SELF'];
 	$s = "<h1>Shuffle!</h1>\n";
-	$mp3root = $mp3url;
+	$mp3root = MUSIC_URL;
+	$mp3url = MUSIC_URL;
+	$mp3path = MUSIC_LOCAL_PATH;
 	if($_GET['l'] != "") {
-		$mp3url = $mp3url.$_GET['l'];
-		$mp3path = $mp3path.$_GET['l'];
+		$mp3url = MUSIC_URL.$_GET['l'];
+		$mp3path = MUSIC_LOCAL_PATH.$_GET['l'];
 	}
 	$mp3url = stripslashes($mp3url);
 	$mp3path = stripslashes($mp3path);
@@ -156,7 +158,8 @@ if( !empty($_GET['mp3']) ) { // play mp3
 				$filepar = str_replace('#', '%'.dechex(ord('#')), str_replace('&', '%26', $filepar));
 				$s = $s." <li><input type=\"checkbox\" value=\"$filepar\" name=\"F:$filepar\" />";
 				$s = $s." <a class=\"open-external\" onclick=\"refresh_player('$phpself?mp3=$filepar');return false;\">$filename</a>\n";
-				$s = $s." <a onclick=\"parent.player.add('".urldecode($pathinfo['filename'])."','".convert_to($mp3url."/".$f)."');return false;\">A</a></li>\n";
+				$s = $s." <a onclick=\"parent.player.add('".urldecode($pathinfo['filename'])."','".convert_to($mp3url."/".$f)."');return false;\">A</a>\n";
+				$s = $s.' <a href="'.convert_to($mp3url."/".$f).'">D</a></li>'."\n";
 			}
 		}
 		$s = $s."</ul>\n";
@@ -240,9 +243,8 @@ function listing($file_handle, $path, $url, $rel, $prune = false) {
 function onpost($r, $rootdir, $curdir, $arr, $l) {
 	$filename = 'listing.xml';
 
-	global $mp3url, $mp3path;
-	$mp3url = $mp3url.$curdir;
-	$mp3path = $mp3path.$curdir;
+	$mp3url = MUSIC_URL.$curdir;
+	$mp3path = MUSIC_LOCAL_PATH.$curdir;
 
 	if( $r == 'playAll' ) {
 		$file_handle = fopen('/tmp/'.$filename, 'w') or die("Unable to create $filename");
