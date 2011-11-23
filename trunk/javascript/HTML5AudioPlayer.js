@@ -44,7 +44,7 @@ function History(origLen, factor) {
 				delete this.list[i];
 			}
 		}
-		deleted = deleted.sort(function(a,b){return a>b;});
+		deleted = deleted.sort(function(a,b){return (a>b)?1:-1;});
 		for( var i in deleted ) {
 			this.list.splice(deleted[i],1);
 		}
@@ -56,7 +56,7 @@ var currentIndex = 0;
 var bShuffle = false;
 var intervalCurrent = null;
 var barWidth = $('#progress').width();
-var volume = 0.5;
+var volume = 0.8;
 var timerDuration = 30;
 var historyFactor = 0.3;
 var historyManager = new History(list.length, historyFactor);
@@ -194,7 +194,7 @@ function buildingList(xml)
 					.attr('href','javascript:load('+index+')')
 					.css('pointer','cursor')
 				).data('index', index)
-				.bind('dblclick', function(){del($(this).data('index'));})
+				.bind('dblclick', function(){del($(this).data('index'));prev();})
 				.css('cursor','pointer')
 			);
 		list.push({title:$(this).find('title').text(),loc:$(this).find('location').text()});
@@ -220,7 +220,7 @@ function load( index )
 		moveScroll( index );
 		$('#mediaplayer').attr('src',list[index].loc);
 		$('#mediaplayer')[0].load();
-		$('#playing_name').html(list[index].title).click(moveScroll);
+		$('#playing_name').html("<marquee>" + list[index].title + "</marquee>");//.click(moveScroll);
 		play();
 		$('#mediaplayer')[0].addEventListener("ended", next, false);
 
@@ -252,7 +252,7 @@ function add( title, filepath )
 	$('#playlist').append(
 			$('<li>').append($('<a>').html(title).attr('href','javascript:load('+index+')').css('pointer','cursor'))
 				.data('index',lastIndex+1)
-				.bind('dblclick', function(){del($(this).data('index'));})
+				.bind('dblclick', function(){del($(this).data('index'));prev();})
 				.css('cursor','pointer')
 		);
 	repaintList();
@@ -261,7 +261,15 @@ function add( title, filepath )
 
 function del( index )
 {
-	$('#playlist > li').each(function(){if($(this).data('index')==index)$(this).detach();else if($(this).data('index')>index)$(this).data('index')-=1;repaintList();});
+	$('#playlist > li').each(function(){
+        if($(this).data('index')==index)
+            $(this).detach();
+        else if($(this).data('index')>index) {
+            $(this).data('index', $(this).data('index')-1)
+                .find('a').attr('href', 'javascript:load('+$(this).data('index')+')');
+        }
+        repaintList();
+    });
 	list.splice(index,1); // erase
 	historyManager.del(index);
 	historyManager.modify(list.length);

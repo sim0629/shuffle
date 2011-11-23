@@ -177,6 +177,7 @@ if( !empty($_GET['mp3']) ) { // play mp3
 
 // FUNCTION DEFINITION
 function convert_to($in_str, $ch = '%') {
+    $out_str = "";
 	for ($i = 0; $i < strlen($in_str); $i++) {
 		$int = ord($in_str[$i]);
 		if ($int < 128) {
@@ -190,6 +191,19 @@ function convert_to($in_str, $ch = '%') {
 
 function decode($str) {
 	return stripslashes(urldecode($str));
+}
+
+function filename($path) {
+    $pos = strrpos($path, "/");
+    if( $pos === FALSE )
+        return $path;
+    else {
+        return substr($path, $pos+1);
+    }
+}
+
+function filename_intval($path) {
+    return intval(filename($path));
 }
 
 class comp_mixed_dir {
@@ -210,6 +224,10 @@ class comp_mixed_dir {
 			if(is_dir($b)) {
 				return 1;
 			} else {
+                if( filename_intval($a) != 0 && filename_intval($b) != 0 )
+                {
+                    return ( filename_intval($a) < filename_intval($b) ) ? -1 : 1;
+                }
 				return ( $a < $b ) ? -1 : 1;
 			}
 		}

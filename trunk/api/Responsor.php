@@ -22,7 +22,7 @@ abstract class Responsor
 		$szParams	= ReqParam( $_GET, 'param_list', FPregReplace("/[^a-z,_]/") );
 		if( empty($szParams) )
 		{
-			throw new InvalidParameterException('param_list');
+			throw new InvalidParameterException('param_list is null');
 		}
 
 		$aParams	= explode( ",", $szParams );
@@ -61,10 +61,10 @@ class ViewResponsor extends Responsor
 {
 	public function Response()
 	{
-		require_once "Store.php";
-		$oDb	=& StoreSelector::Select('sqlite');
-		$oResult = $oDb -> FindData( array('context' => $this -> params['context'] ) );
-		echo json_encode($oResult);
+		//require_once "Store.php";
+		//$oDb	=& StoreSelector::Select('sqlite');
+		//$oResult = $oDb -> FindData( array('context' => $this -> params['context'], 'data' => $this -> params['data']) );
+		header("Location: " ."/music/" . $this -> params['context'] . "/" . $this -> params['data']);
 	}
 
 	public function VerifyParam()
