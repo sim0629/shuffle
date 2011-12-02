@@ -25,7 +25,7 @@ sajax_handle_client_request();
 
 
 // IMPLEMENTATION
-$filename	= 'listing.xml';
+$filename	= LISTING_FILENAME;
 $loadfile	= 'listing.xml.php';
 $shuf		= (empty($_GET['sh']))?'false':'true';
 $listPlay	= (!empty($_GET['r']) or !empty($_GET['sh']) or !empty($_GET['d']));
@@ -43,7 +43,7 @@ if( !empty($_GET['d']) ) {
 	}
 	$path = $mp3path.$_GET['d'];
 	$url = $mp3url.$_GET['d'];
-	$file_handle = fopen('/tmp/'.$filename, 'w') or die("Unable to create $filename");
+	$file_handle = fopen(LISTING_LOCAL_PATH, 'w') or die("Unable to create $filename");
 
 	fwrite($file_handle, "<?xml version=\"1.0\"?>");
 	fwrite($file_handle, "<playlist version=\"1\">\n <trackList>\n");
@@ -158,7 +158,7 @@ if( !empty($_GET['mp3']) ) { // play mp3
 				$filepar = str_replace('#', '%'.dechex(ord('#')), str_replace('&', '%26', $filepar));
 				$s = $s." <li><input type=\"checkbox\" value=\"$filepar\" name=\"F:$filepar\" />";
 				$s = $s." <a class=\"open-external\" onclick=\"refresh_player('$phpself?mp3=$filepar');return false;\">$filename</a>\n";
-				$s = $s." <a onclick=\"parent.player.add('".urldecode($pathinfo['filename'])."','".convert_to($mp3url."/".$f)."');return false;\">A</a>\n";
+				$s = $s." <a onclick=\"parent.player.add('".str_replace("'", "\\'", urldecode($pathinfo['filename']))."','".str_replace("'","\\'",convert_to($mp3url."/".$f))."');return false;\">A</a>\n";
 				$s = $s.' <a href="'.convert_to($mp3url."/".$f).'">D</a></li>'."\n";
 			}
 		}
@@ -259,7 +259,7 @@ function listing($file_handle, $path, $url, $rel, $prune = false) {
 }
 
 function onpost($r, $rootdir, $curdir, $arr, $l) {
-	$filename = 'listing.xml';
+	$filename = LISTING_FILENAME;
 
 	$mp3url = MUSIC_URL.$curdir;
 	$mp3path = MUSIC_LOCAL_PATH.$curdir;
