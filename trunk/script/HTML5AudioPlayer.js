@@ -275,3 +275,14 @@ function del( index )
 	historyManager.modify(list.length);
 }
 
+function save()
+{
+    return $.post(
+        'save.php',
+        {'json':JSON.stringify(list)},
+        function(data){
+            if( data ) alert(data);
+        },'text'
+    );
+}
+
