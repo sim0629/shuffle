@@ -248,7 +248,7 @@ function add( title, filepath )
 {
 	var index = list.length;
 	list.push({'title':title,'loc':filepath});
-	var lastIndex = $('#playlist > li').last().data('index');
+	var lastIndex = $('#playlist > li').length?$('#playlist > li').last().data('index'):-1;
 	$('#playlist').append(
 			$('<li>').append($('<a>').html(title).attr('href','javascript:load('+index+')').css('pointer','cursor'))
 				.data('index',lastIndex+1)

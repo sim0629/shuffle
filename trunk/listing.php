@@ -55,20 +55,24 @@ if( !empty($_GET['d']) ) {
 
 if( !empty($_GET['mp3']) ) { // play mp3
 	$s = stripslashes($_GET['mp3']);
-	$mp3 = iconv($current_encoding, 'UTF-8//IGNORE', MUSIC_URL.$_GET['mp3'].'.mp3');
-	$s .= '<div id="mp3_div"><a href="http://www.macromedia.com/go/getflashplayer">Get the Flash Player</a> to see this player.</div>
-		<script type="text/javascript" src="'.$swfobject.'"></script>
+	//$mp3 = encodeMultibyte(rawurlencode(iconv($current_encoding, 'UTF-8//IGNORE', MUSIC_URL.$_GET['mp3'].'.mp3')));
+	$mp3 = encodeMultibyte(iconv($current_encoding, 'UTF-8//IGNORE', MUSIC_URL.$_GET['mp3'].'.mp3'));
+	$s .= <<<HTMLSTART
+<div id="mp3_div"><a href="http://www.macromedia.com/go/getflashplayer">Get the Flash Player</a> to see this player.</div>
+        <script src="/app/mediaplayer/jwplayer.js"></script>
 		<script type="text/javascript">
-		var so = new SWFObject("'.$swf_mp3.'","mediaplayer","'.$mp3_width.'","'.$mp3_height.'","7");
-	so.addVariable("width","'.$mp3_width.'");
-	so.addVariable("height","20");
-	so.addVariable("file","'.convert_to($mp3, "%").'");
-	so.addVariable("autostart","true");
-	so.addVariable("skin","simple.swf");
-	so.addVariable("playlist","bottom");
-	so.addVariable("playlistsize","380");
-	so.write("mp3_div");
-	</script>';
+        jwplayer("mp3_div").setup({
+            flashplayer: "/app/mediaplayer/player.swf",
+                file: '$mp3',
+                width: $mp3_width,
+                events: {
+                    onReady: function(){
+                        jwplayer().play();
+                    }
+                }
+            });
+	</script>
+HTMLSTART;
 	include('swfplayer.html');
 } else if( $listPlay ) {
 	$s = '<div id="mp3_div"><a href="http://www.macromedia.com/go/getflashplayer">Get the Flash Player</a> to see this player.</div>
@@ -226,7 +230,8 @@ class comp_mixed_dir {
 			} else {
                 if( filename_intval($a) != 0 && filename_intval($b) != 0 )
                 {
-                    return ( filename_intval($a) < filename_intval($b) ) ? -1 : 1;
+                    if( filename_intval($a) != filename_intval($b) )
+                        return ( filename_intval($a) < filename_intval($b) ) ? -1 : 1;
                 }
 				return ( $a < $b ) ? -1 : 1;
 			}
@@ -327,6 +332,18 @@ function isAcceptable( $ext ) {
 		return $ext == 'mp3' or $ext == 'ogg';
 	else
 		return $ext == 'mp3';
+}
+
+function encodeMultibyte($str) {
+    $out = '';
+    for($i=0;$i<strlen($str);$i++) {
+        if( ord($str[$i]) >= 0x80 ) {
+            $out .= ('%'.dechex(ord($str[$i])));
+        } else {
+            $out .= $str[$i];
+        }
+    }
+    return $out;
 }
 
 ?>

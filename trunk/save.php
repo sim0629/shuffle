@@ -19,10 +19,11 @@ function createFile( $json )
 	fwrite($file_handle, "<playlist version=\"1\">\n <trackList>\n");
     foreach( $json as $elem )
     {
+        $loc    = strtr($elem->loc, array('&' => '&amp;', '"' => '&quot;', "'" => "&apos;", "<" => "&lt;", ">" => "&gt;"));
         $xml    = <<<XML_START
     <track>
         <title>{$elem->title}</title>
-        <location>{$elem->loc}</location>
+        <location>{$loc}</location>
     </track>
 XML_START;
         fwrite($file_handle, $xml);
