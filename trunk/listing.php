@@ -1,4 +1,9 @@
 <?
+if( preg_match('/\./', $_GET['l']) || preg_match('/^\//', $_GET['l']) ) {
+    header('Location: http://www.google.com');
+    exit;
+}
+
 // HEADER DEFINITION
 $current_encoding = 'UTF-8';
 header("Content-type: text/html; charset=$current_encoding");
@@ -257,8 +262,22 @@ function listing($file_handle, $path, $url, $rel, $prune = false) {
 			listing($file_handle, $path.'/'.$file, $url.'/'.$file, $rel.$file);
 		}
 		$pathinfo = pathinfo(urlencode($file));
-		if( isAcceptable(strtolower($pathinfo['extension'])) ) {
+		if( is_array($pathinfo) && !empty($pathinfo['extension']) && isAcceptable(strtolower($pathinfo['extension'])) ) {
 			fwrite($file_handle, "  <track>\n   <title>".str_replace('#', '%'.dechex(ord('#')), str_replace('&', '&amp;', urldecode($pathinfo['filename'])))."</title>\n   <location>".convert_to($url.'/'.$file)."</location>\n  </track>\n");
+            if( IsDev() )
+            {
+                if( is_dir(PLAYLIST_FOLDER) || (!is_dir(PLAYLIST_FOLDER) && mkdir(PLAYLIST_FOLDER)) )
+                {
+                    if( is_link(PLAYLIST_FOLDER . $file) )
+                        unlink(PLAYLIST_FOLDER . $file);
+
+                    if( is_file("$path/$file") )
+                        symlink("$path/$file", PLAYLIST_FOLDER . $file);
+                    //symlink(PLAYLIST_FOLDER . $file, "$path/$file");
+                    //echo "$path/$file<br />";
+                    //echo PLAYLIST_FOLDER . "$file<br />";
+                }
+            }
 		}
 	}
 }

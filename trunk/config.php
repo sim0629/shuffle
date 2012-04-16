@@ -8,3 +8,10 @@ define("LISTING_FILENAME", "listing_{$_SERVER['REMOTE_ADDR']}.xml");
 define("LISTING_LOCAL_PATH", "/tmp/" . LISTING_FILENAME);
 define("LISTING_URL", LISTING_FILENAME);
 
+define("PLAYLIST_FOLDER", "playlist/{$_SERVER['REMOTE_ADDR']}/");
+
+function IsDev()
+{
+    return false;
+}
+
