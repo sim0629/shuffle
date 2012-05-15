@@ -1,5 +1,5 @@
 <?
-if( preg_match('/\./', $_GET['l']) || preg_match('/^\//', $_GET['l']) ) {
+if( preg_match('/\.\./', $_GET['l']) || preg_match('/^\//', $_GET['l']) ) {
     header('Location: http://www.google.com');
     exit;
 }
