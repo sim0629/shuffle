@@ -37,7 +37,7 @@ sajax_handle_client_request();
 $filename	= LISTING_FILENAME;
 $loadfile	= 'listing.xml.php';
 $shuf		= (empty($_GET['sh']))?'false':'true';
-$listPlay	= (!empty($_GET['r']) or !empty($_GET['sh']) or !empty($_GET['d']));
+$listPlay	= (!empty($_GET['r']) || !empty($_GET['sh']) || !empty($_GET['d']));
 $supportMp3	= (ereg( '(Chrome|Safari)', $_SERVER['HTTP_USER_AGENT'] ));
 
 if( !empty($_GET['d']) ) {
@@ -72,8 +72,8 @@ if( !empty($_GET['mp3']) ) { // play mp3
 		<script type="text/javascript">
         jwplayer("mp3_div").setup({
             flashplayer: "/app/mediaplayer/player.swf",
-                file: '$mp3',
-                width: $mp3_width,
+                file: '{$mp3}',
+                width: {$mp3_width},
                 events: {
                     onReady: function(){
                         jwplayer().play();
@@ -87,7 +87,6 @@ HTMLSTART;
     $t = time();
 	$s = <<<HTMLSTART
     <div id="mp3_div"><a href="http://www.macromedia.com/go/getflashplayer">Get the Flash Player</a> to see this player.</div>
-    <!--script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script-->
     <script type="text/javascript" src="${swfobject}"></script>
     <script type="text/javascript">
         var so = new SWFObject("${swf_mp3}","mediaplayer","${mp3_width}","${mp3_height}","7");
@@ -114,7 +113,6 @@ HTMLSTART;
 	$mp3root = MUSIC_URL;
 	$mp3url = MUSIC_URL.$current_location;
 	$mp3path = MUSIC_LOCAL_PATH.$current_location;
-    $s = '';
 
 	$mp3url = stripslashes($mp3url);
 	$mp3path = stripslashes($mp3path);
@@ -173,6 +171,8 @@ HTMLSTART;
 		}
 		$file_section .= "</ul>\n";
 	}
+
+    $encoded_current_location = encode_multibyte($current_location);
 
 	include 'list.php';
 }
@@ -257,26 +257,14 @@ function listing($file_handle, $path, $url, $rel, $prune = false) {
 		$pathinfo = pathinfo(urlencode($file));
 		if( is_array($pathinfo) && !empty($pathinfo['extension']) && is_acceptable(strtolower($pathinfo['extension'])) ) {
 			fwrite($file_handle, "  <track>\n   <title>".str_replace('#', '%'.dechex(ord('#')), str_replace('&', '&amp;', urldecode($pathinfo['filename'])))."</title>\n   <location>".convert_to($url.'/'.$file)."</location>\n  </track>\n");
-            if( IsDev() )
-            {
-                if( is_dir(PLAYLIST_FOLDER) || (!is_dir(PLAYLIST_FOLDER) && mkdir(PLAYLIST_FOLDER)) )
-                {
-                    if( is_link(PLAYLIST_FOLDER . $file) )
-                        unlink(PLAYLIST_FOLDER . $file);
-
-                    if( is_file("$path/$file") )
-                        symlink("$path/$file", PLAYLIST_FOLDER . $file);
-                    //symlink(PLAYLIST_FOLDER . $file, "$path/$file");
-                    //echo "$path/$file<br />";
-                    //echo PLAYLIST_FOLDER . "$file<br />";
-                }
-            }
 		}
 	}
 }
 
 function on_post($r, $rootdir, $curdir, $arr, $l) {
 	$filename = LISTING_FILENAME;
+
+    $curdir = rawurldecode($curdir);
 
 	$mp3url = MUSIC_URL.$curdir;
 	$mp3path = MUSIC_LOCAL_PATH.$curdir;
@@ -341,7 +329,7 @@ function generate_path($path, $phpself) {
 function is_acceptable( $ext ) {
 	$HTML5 = (ereg( '(Chrome|Safari)', $_SERVER['HTTP_USER_AGENT'] ));
 	if( $HTML5 )
-		return $ext == 'mp3' or $ext == 'ogg';
+		return $ext == 'mp3' || $ext == 'ogg';
 	else
 		return $ext == 'mp3';
 }
@@ -359,4 +347,3 @@ function encode_multibyte($str) {
 }
 
 /* end of listing.php */
-// vim: noet

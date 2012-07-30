@@ -47,7 +47,7 @@
 
 <form id="listing" method="post">
     <input type="hidden" value="<?=$mp3root?>" name="root" />
-    <input type="hidden" value="<?=$current_location?>" name="currentdir" />
+    <input type="hidden" value="<?=$encoded_current_location?>" name="currentdir" />
 
     <?=$directory_section?>
     <?=$file_section?>
