@@ -1,9 +1,9 @@
 <?
 // GET PARAMETERS
-$szLocation = empty($_GET['l'])?"":$_GET['l'];
+$current_location = empty($_GET['l'])?"":$_GET['l'];
 
 
-if( preg_match('/\.\./', $szLocation) || preg_match('/^\//', $szLocation) ) {
+if( preg_match('/\.\./', $current_location) || preg_match('/^\//', $current_location) ) {
     header('Location: http://www.google.com');
     exit;
 }
@@ -29,7 +29,7 @@ $s = "";
 
 $sajax_request_type = "POST";
 sajax_init();
-sajax_export("onpost");
+sajax_export("on_post");
 sajax_handle_client_request();
 
 
@@ -46,9 +46,9 @@ if( !empty($_GET['d']) ) {
 	}
 	$mp3url = MUSIC_URL;
 	$mp3path = MUSIC_LOCAL_PATH;
-	if( !empty($szLocation) ) {
-		$mp3path = MUSIC_LOCAL_PATH.$szLocation.'/';
-		$mp3url = MUSIC_URL.$szLocation.'/';
+	if( !empty($current_location) ) {
+		$mp3path = MUSIC_LOCAL_PATH.$current_location.'/';
+		$mp3url = MUSIC_URL.$current_location.'/';
 	}
 	$path = $mp3path.$_GET['d'];
 	$url = $mp3url.$_GET['d'];
@@ -64,8 +64,8 @@ if( !empty($_GET['d']) ) {
 
 if( !empty($_GET['mp3']) ) { // play mp3
 	$s = stripslashes($_GET['mp3']);
-	//$mp3 = encodeMultibyte(rawurlencode(iconv($current_encoding, 'UTF-8//IGNORE', MUSIC_URL.$_GET['mp3'].'.mp3')));
-	$mp3 = encodeMultibyte(iconv($current_encoding, 'UTF-8//IGNORE', MUSIC_URL.$_GET['mp3'].'.mp3'));
+	//$mp3 = encode_multibyte(rawurlencode(iconv($current_encoding, 'UTF-8//IGNORE', MUSIC_URL.$_GET['mp3'].'.mp3')));
+	$mp3 = encode_multibyte(iconv($current_encoding, 'UTF-8//IGNORE', MUSIC_URL.$_GET['mp3'].'.mp3'));
 	$s .= <<<HTMLSTART
 <div id="mp3_div"><a href="http://www.macromedia.com/go/getflashplayer">Get the Flash Player</a> to see this player.</div>
         <script src="/app/mediaplayer/jwplayer.js"></script>
@@ -107,23 +107,17 @@ HTMLSTART;
 	include($supportMp3?'html5player.html':'swfplayer.html');
 } else { // listing directory
 	$phpself = $_SERVER['PHP_SELF'];
-	$s = "<h1>Shuffle!</h1>\n";
 	$mp3root = MUSIC_URL;
-	$mp3url = MUSIC_URL;
-	$mp3path = MUSIC_LOCAL_PATH;
-	if( !empty($szLocation) ) {
-		$mp3url = MUSIC_URL.$szLocation;
-		$mp3path = MUSIC_LOCAL_PATH.$szLocation;
-	}
+	$mp3url = MUSIC_URL.$current_location;
+	$mp3path = MUSIC_LOCAL_PATH.$current_location;
+    $s = '';
+
 	$mp3url = stripslashes($mp3url);
 	$mp3path = stripslashes($mp3path);
-	$s = $s."<h2>Path</h2>\n<div id=\"current-path\">\n";
-	$s = $s.generate_path($szLocation, $phpself)."\n";
-	$s = $s."</div>\n";
+
+	$generated_path = generate_path($current_location, $phpself);
+
 	$dir_handle = opendir(urldecode($mp3path)) or die("Unable to open dir, " . urldecode($mp3path));
-	$s = $s."<form id=\"listing\" method=\"post\">\n";
-	$s = $s."<input type=\"hidden\" value=\"$mp3root\" name=\"root\" />\n";
-	$s = $s."<input type=\"hidden\" value=\"{$szLocation}\" name=\"currentdir\" />\n";
 	$dirs = array();
 	$files = array();
 	while( $f = readdir($dir_handle) ) {
@@ -131,7 +125,7 @@ HTMLSTART;
 			array_push($dirs, $f);
 		} else if( is_file($mp3path.'/'.$f) ) {
 			$pathinfo = pathinfo($f);
-			if( isAcceptable(strtolower($pathinfo['extension'])) ) {
+			if( is_acceptable(strtolower($pathinfo['extension'])) ) {
 				array_push($files, $f);
 			}
 		}
@@ -139,47 +133,44 @@ HTMLSTART;
 	closedir($dir_handle);
 	sort($dirs);
 	sort($files);
+
+    $directory_section = '';
 	if( count($dirs) > 0 ) {
-		$s = $s."<h2>Directory</h2>\n";
-		$s = $s."<ul id=\"dir-list\">\n";
+		$directory_section .= "<h2>Directory</h2>\n";
+		$directory_section .= "<ul id=\"dir-list\">\n";
 		foreach( $dirs as $f ) {
-			$l = empty($szLocation)?$f:($szLocation.'/'.$f);
+			$l = empty($current_location)?$f:($current_location.'/'.$f);
 			$l = str_replace('#', '%'.dechex(ord('#')), str_replace('&', '%26', $l));
-			$ll = empty($szLocation)?"":$szLocation;
+			$ll = empty($current_location)?"":$current_location;
 			$f = urlencode($f);
-			$s = $s." <li><input type=\"checkbox\" value=\"$f\" name=\"D:$f\" />";
-			$s = $s." <a class=\"dir-name\" href=\"$phpself?l=$l\">".urldecode($f)."</a>";
-			$s = $s." <a class=\"open-external\" onclick=\"refresh_player('$phpself?d=$f&l=$ll');return false;\">N</a></li>\n";
+			$directory_section .= " <li><input type=\"checkbox\" value=\"$f\" name=\"D:$f\" />";
+			$directory_section .= " <a class=\"dir-name\" href=\"$phpself?l=$l\">".urldecode($f)."</a>";
+			$directory_section .= " <a class=\"open-external\" onclick=\"refresh_player('$phpself?d=$f&l=$ll');return false;\">N</a></li>\n";
 		}
-		$s = $s."</ul>\n";
-	}
-	if( count($files) > 0 ) {
-		$s = $s."<h2>Files</h2>\n";
-		$s = $s."<ul id=\"file-list\">\n";
-		foreach( $files as $f ) {
-			$pathinfo = pathinfo(urlencode($f));
-			if( isAcceptable(strtolower($pathinfo['extension'])) ) {
-				$filename = urldecode($pathinfo['filename']);
-				$filepar = empty($szLocation)?$filename:($szLocation.'/'.$filename);
-				$filepar = urlencode(stripslashes($filepar));
-				$filepar = str_replace('#', '%'.dechex(ord('#')), str_replace('&', '%26', $filepar));
-				$s = $s." <li><input type=\"checkbox\" value=\"$filepar\" name=\"F:$filepar\" />";
-				$s = $s." <a class=\"open-external\" onclick=\"refresh_player('$phpself?mp3=$filepar');return false;\">$filename</a>\n";
-				$s = $s." <a onclick=\"parent.player.add('".str_replace("'", "\\'", urldecode($pathinfo['filename']))."','".str_replace("'","\\'",convert_to($mp3url."/".$f))."');return false;\">A</a>\n";
-				$s = $s.' <a href="'.convert_to($mp3url."/".$f).'">D</a></li>'."\n";
-			}
-		}
-		$s = $s."</ul>\n";
+		$directory_section .= "</ul>\n";
 	}
 
-	$l = $szLocation;
-	$s = $s."<div id=\"buttons\">\n";
-	$s = $s."<input type=\"submit\" name=\"playAll\" onclick=\"post('playAll', '$l');return false;\" value=\"PlayAll\"\" />\n";
-	$s = $s."<input type=\"submit\" name=\"playCurrent\" onclick=\"post('playCurrent', '$l');return false;\" value=\"PlayCurrent\" />\n";
-	$s = $s."<input type=\"submit\" name=\"playSelected\" onclick=\"post('playSelected', '$l');return false;\" value=\"PlaySelected\" />\n";
-	$s = $s."</div>\n";
-	$s = $s."</form>\n";
-	include('swfplayer.html');
+    $file_section = '';
+	if( count($files) > 0 ) {
+		$file_section .= "<h2>Files</h2>\n";
+		$file_section .= "<ul id=\"file-list\">\n";
+		foreach( $files as $f ) {
+			$pathinfo = pathinfo(urlencode($f));
+			if( is_acceptable(strtolower($pathinfo['extension'])) ) {
+				$filename = urldecode($pathinfo['filename']);
+				$filepar = empty($current_location)?$filename:($current_location.'/'.$filename);
+				$filepar = urlencode(stripslashes($filepar));
+				$filepar = str_replace('#', '%'.dechex(ord('#')), str_replace('&', '%26', $filepar));
+				$file_section .= " <li><input type=\"checkbox\" value=\"$filepar\" name=\"F:$filepar\" />";
+				$file_section .= " <a class=\"open-external\" onclick=\"refresh_player('$phpself?mp3=$filepar');return false;\">$filename</a>\n";
+				$file_section .= " <a onclick=\"parent.player.add('".str_replace("'", "\\'", urldecode($pathinfo['filename']))."','".str_replace("'","\\'",convert_to($mp3url."/".$f))."');return false;\">A</a>\n";
+				$file_section .= ' <a href="'.convert_to($mp3url."/".$f).'">D</a></li>'."\n";
+			}
+		}
+		$file_section .= "</ul>\n";
+	}
+
+	include 'list.php';
 }
 
 // FUNCTION DEFINITION
@@ -260,7 +251,7 @@ function listing($file_handle, $path, $url, $rel, $prune = false) {
 			listing($file_handle, $path.'/'.$file, $url.'/'.$file, $rel.$file);
 		}
 		$pathinfo = pathinfo(urlencode($file));
-		if( is_array($pathinfo) && !empty($pathinfo['extension']) && isAcceptable(strtolower($pathinfo['extension'])) ) {
+		if( is_array($pathinfo) && !empty($pathinfo['extension']) && is_acceptable(strtolower($pathinfo['extension'])) ) {
 			fwrite($file_handle, "  <track>\n   <title>".str_replace('#', '%'.dechex(ord('#')), str_replace('&', '&amp;', urldecode($pathinfo['filename'])))."</title>\n   <location>".convert_to($url.'/'.$file)."</location>\n  </track>\n");
             if( IsDev() )
             {
@@ -280,7 +271,7 @@ function listing($file_handle, $path, $url, $rel, $prune = false) {
 	}
 }
 
-function onpost($r, $rootdir, $curdir, $arr, $l) {
+function on_post($r, $rootdir, $curdir, $arr, $l) {
 	$filename = LISTING_FILENAME;
 
 	$mp3url = MUSIC_URL.$curdir;
@@ -343,7 +334,7 @@ function generate_path($path, $phpself) {
 	return implode("/", $s);
 }
 
-function isAcceptable( $ext ) {
+function is_acceptable( $ext ) {
 	$HTML5 = (ereg( '(Chrome|Safari)', $_SERVER['HTTP_USER_AGENT'] ));
 	if( $HTML5 )
 		return $ext == 'mp3' or $ext == 'ogg';
@@ -351,7 +342,7 @@ function isAcceptable( $ext ) {
 		return $ext == 'mp3';
 }
 
-function encodeMultibyte($str) {
+function encode_multibyte($str) {
     $out = '';
     for($i=0;$i<strlen($str);$i++) {
         if( ord($str[$i]) >= 0x80 ) {
@@ -363,4 +354,5 @@ function encodeMultibyte($str) {
     return $out;
 }
 
-?>
+/* end of listing.php */
+// vim: noet

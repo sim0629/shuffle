@@ -1,7 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html>
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=<?echo $current_encoding;?>" />
 	<title>Shuffle!</title>
@@ -40,6 +38,25 @@
 </head>
 
 <body>
-<? echo $s; ?>
+<h1>Shuffle!</h1>
+
+<h2>Path</h2>
+<div id="current-path">
+<?= $generated_path ?>
+</div>
+
+<form id="listing" method="post">
+    <input type="hidden" value="<?=$mp3root?>" name="root" />
+    <input type="hidden" value="<?=$current_location?>" name="currentdir" />
+
+    <?=$directory_section?>
+    <?=$file_section?>
+
+    <div id="buttons">
+        <input type="submit" name="playAll" onclick="post('playAll', '<?=$current_location?>');return false;" value="PlayAll" />
+        <input type="submit" name="playCurrent" onclick="post('playCurrent', '<?=$current_location?>');return false;" value="PlayCurrent" />
+        <input type="submit" name="playSelected" onclick="post('playSelected', '<?=$current_location?>');return false;" value="PlaySelected" />
+    </div>
+</form>
 </body>
 </html>
