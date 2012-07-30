@@ -1,5 +1,9 @@
 <?
-if( preg_match('/\.\./', $_GET['l']) || preg_match('/^\//', $_GET['l']) ) {
+// GET PARAMETERS
+$szLocation = empty($_GET['l'])?"":$_GET['l'];
+
+
+if( preg_match('/\.\./', $szLocation) || preg_match('/^\//', $szLocation) ) {
     header('Location: http://www.google.com');
     exit;
 }
@@ -42,9 +46,9 @@ if( !empty($_GET['d']) ) {
 	}
 	$mp3url = MUSIC_URL;
 	$mp3path = MUSIC_LOCAL_PATH;
-	if( $_GET['l'] != "" ) {
-		$mp3path = MUSIC_LOCAL_PATH.$_GET['l'].'/';
-		$mp3url = MUSIC_URL.$_GET['l'].'/';
+	if( !empty($szLocation) ) {
+		$mp3path = MUSIC_LOCAL_PATH.$szLocation.'/';
+		$mp3url = MUSIC_URL.$szLocation.'/';
 	}
 	$path = $mp3path.$_GET['d'];
 	$url = $mp3url.$_GET['d'];
@@ -107,19 +111,19 @@ HTMLSTART;
 	$mp3root = MUSIC_URL;
 	$mp3url = MUSIC_URL;
 	$mp3path = MUSIC_LOCAL_PATH;
-	if($_GET['l'] != "") {
-		$mp3url = MUSIC_URL.$_GET['l'];
-		$mp3path = MUSIC_LOCAL_PATH.$_GET['l'];
+	if( !empty($szLocation) ) {
+		$mp3url = MUSIC_URL.$szLocation;
+		$mp3path = MUSIC_LOCAL_PATH.$szLocation;
 	}
 	$mp3url = stripslashes($mp3url);
 	$mp3path = stripslashes($mp3path);
 	$s = $s."<h2>Path</h2>\n<div id=\"current-path\">\n";
-	$s = $s.generate_path($_GET['l'], $phpself)."\n";
+	$s = $s.generate_path($szLocation, $phpself)."\n";
 	$s = $s."</div>\n";
 	$dir_handle = opendir(urldecode($mp3path)) or die("Unable to open dir, " . urldecode($mp3path));
 	$s = $s."<form id=\"listing\" method=\"post\">\n";
 	$s = $s."<input type=\"hidden\" value=\"$mp3root\" name=\"root\" />\n";
-	$s = $s."<input type=\"hidden\" value=\"{$_GET['l']}\" name=\"currentdir\" />\n";
+	$s = $s."<input type=\"hidden\" value=\"{$szLocation}\" name=\"currentdir\" />\n";
 	$dirs = array();
 	$files = array();
 	while( $f = readdir($dir_handle) ) {
@@ -139,12 +143,9 @@ HTMLSTART;
 		$s = $s."<h2>Directory</h2>\n";
 		$s = $s."<ul id=\"dir-list\">\n";
 		foreach( $dirs as $f ) {
-			if( $_GET['l'] != "" )
-				$l = $_GET['l'].'/'.$f;
-			else
-				$l = $f;
+			$l = empty($szLocation)?$f:($szLocation.'/'.$f);
 			$l = str_replace('#', '%'.dechex(ord('#')), str_replace('&', '%26', $l));
-			$ll = $_GET['l'];
+			$ll = empty($szLocation)?"":$szLocation;
 			$f = urlencode($f);
 			$s = $s." <li><input type=\"checkbox\" value=\"$f\" name=\"D:$f\" />";
 			$s = $s." <a class=\"dir-name\" href=\"$phpself?l=$l\">".urldecode($f)."</a>";
@@ -159,10 +160,7 @@ HTMLSTART;
 			$pathinfo = pathinfo(urlencode($f));
 			if( isAcceptable(strtolower($pathinfo['extension'])) ) {
 				$filename = urldecode($pathinfo['filename']);
-				if( $_GET['l'] != "" )
-					$filepar = $_GET['l'].'/'.$filename;
-				else
-					$filepar = $filename;
+				$filepar = empty($szLocation)?$filename:($szLocation.'/'.$filename);
 				$filepar = urlencode(stripslashes($filepar));
 				$filepar = str_replace('#', '%'.dechex(ord('#')), str_replace('&', '%26', $filepar));
 				$s = $s." <li><input type=\"checkbox\" value=\"$filepar\" name=\"F:$filepar\" />";
@@ -174,7 +172,7 @@ HTMLSTART;
 		$s = $s."</ul>\n";
 	}
 
-	$l = $_GET['l'];
+	$l = $szLocation;
 	$s = $s."<div id=\"buttons\">\n";
 	$s = $s."<input type=\"submit\" name=\"playAll\" onclick=\"post('playAll', '$l');return false;\" value=\"PlayAll\"\" />\n";
 	$s = $s."<input type=\"submit\" name=\"playCurrent\" onclick=\"post('playCurrent', '$l');return false;\" value=\"PlayCurrent\" />\n";
