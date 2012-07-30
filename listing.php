@@ -82,29 +82,33 @@ if( !empty($_GET['mp3']) ) { // play mp3
             });
 	</script>
 HTMLSTART;
-	include('swfplayer.html');
+	include 'swfplayer.php';
 } else if( $listPlay ) {
-	$s = '<div id="mp3_div"><a href="http://www.macromedia.com/go/getflashplayer">Get the Flash Player</a> to see this player.</div>
-		<script type="text/javascript" src="'.$swfobject.'"></script>
-		<script type="text/javascript">
-		var so = new SWFObject("'.$swf_mp3.'","mediaplayer","'.$mp3_width.'","'.$mp3_height.'","7");
-	so.addVariable("repeat","always");
-	so.addVariable("width","'.$mp3_width.'");
-	so.addVariable("height","'.$mp3_height.'");
-	so.addVariable("displayheight","0");
-	so.addVariable("file","'.$loadfile.'?'.time().'");
-	so.addVariable("autostart","true");
-	so.addVariable("shuffle","'.$shuf.'");
-	so.addVariable("skin","simple.swf");
-	so.addVariable("playlist","bottom");
-	so.addVariable("playlistsize","380");
-	so.addVariable("lightcolor","cc0022");
-	so.addVariable("backcolor","eeeeee");
-	so.addVariable("frontcolor","888888");
-	so.addVariable("dock","false");
-	so.write("mp3_div");
-	</script>';
-	include($supportMp3?'html5player.html':'swfplayer.html');
+    $t = time();
+	$s = <<<HTMLSTART
+    <div id="mp3_div"><a href="http://www.macromedia.com/go/getflashplayer">Get the Flash Player</a> to see this player.</div>
+    <!--script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script-->
+    <script type="text/javascript" src="${swfobject}"></script>
+    <script type="text/javascript">
+        var so = new SWFObject("${swf_mp3}","mediaplayer","${mp3_width}","${mp3_height}","7");
+        so.addVariable("repeat","always");
+        so.addVariable("width","${mp3_width}");
+        so.addVariable("height","${mp3_height}");
+        so.addVariable("displayheight","0");
+        so.addVariable("file","${loadfile}?${t}");
+        so.addVariable("autostart","true");
+        so.addVariable("shuffle","${shuf}");
+        so.addVariable("skin","simple.swf");
+        so.addVariable("playlist","bottom");
+        so.addVariable("playlistsize","380");
+        so.addVariable("lightcolor","cc0022");
+        so.addVariable("backcolor","eeeeee");
+        so.addVariable("frontcolor","888888");
+        so.addVariable("dock","false");
+        so.write("mp3_div");
+    </script>
+HTMLSTART;
+	include $supportMp3?'html5player.html':'swfplayer.php';
 } else { // listing directory
 	$phpself = $_SERVER['PHP_SELF'];
 	$mp3root = MUSIC_URL;
