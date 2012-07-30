@@ -67,7 +67,7 @@ Your browser does not suppoer the audio element.
 <script type="text/javascript">
 $(function(){
 	$('#playing_status').click(function(){
-		$.get('<?=$loadfile?>?'+(new Date().getTime()),{},function(data,e,xhr){buildingList(xhr.responseXML);load();},'xml');
+		$.get('listing.xml.php?'+(new Date().getTime()),{},function(data,e,xhr){buildingList(xhr.responseXML);load();},'xml');
 	}).css('cursor','pointer').click();
 
 	$('#volume').mousedown(changeVolume);
