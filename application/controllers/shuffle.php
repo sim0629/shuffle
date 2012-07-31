@@ -81,11 +81,18 @@ class Shuffle extends CI_Controller {
 
     public function playlist()
     {
-        $data = array('title' => 'playlist');
+        $support_mp3 = (preg_match( '/(Chrome|Safari)/', $_SERVER['HTTP_USER_AGENT'] ));
+
+        $data = array(
+            'title' => 'playlist',
+            'shuf' => 'true',
+            'css' => (!$support_mp3),
+        );
+        $data = array_merge($data, $this->config->item('shuffle'));
 
         $this->load->helper('html');
         $this->load->view('templates/header', $data);
-        $this->load->view('shuffle/playlist', $data);
+        $this->load->view($support_mp3?'shuffle/playlist_html5':'shuffle/playlist_swf', $data);
         $this->load->view('templates/footer', $data);
     }
 }

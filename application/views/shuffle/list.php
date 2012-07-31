@@ -61,7 +61,7 @@
         ?>
         <li><input type="checkbox" value="<?php echo $filename ?>" name="D:<?php echo $filename ?>" />
         <a class="dir-name" href="<?php echo site_url('list/'.$l) ?>"><?php echo url_decode($filename) ?></a>
-        <a class="open-external">N</a></li>
+        <a class="open-external" href="<?php echo site_url('play') ?>" target="player">N</a></li>
         <?php endforeach ?>
     </ul>
     <?php endif ?>

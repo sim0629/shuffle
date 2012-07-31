@@ -12,6 +12,12 @@ $shuffle['playlist_folder'] = "playlist/{$_SERVER['REMOTE_ADDR']}/";
 $shuffle['mp3_width'] = 400;
 $shuffle['mp3_height'] = 400;
 
+$shuffle['swf_url'] = 'swf/';
+$shuffle['swf_object'] = $shuffle['swf_url'].'swfobject.js';
+$shuffle['swf_mp3'] = $shuffle['swf_url'].'player.swf';
+
+$shuffle['loadfile'] = 'listing.xml.php';
+
 $config['shuffle'] = $shuffle;
 
 /* End of file shuffle.php */
