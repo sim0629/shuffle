@@ -71,6 +71,7 @@ class Shuffle extends CI_Controller {
             'title' => $mp3,
             'play' => $mp3,
             'mp3_width' => $config['mp3_width'],
+            'css' => 'true',
         );
 
         $this->load->helper('html');

@@ -1,6 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-function encode_multibyte($str) {
+function encode_multibyte($str)
+{
     $out = '';
     for($i=0;$i<strlen($str);$i++) {
         if( ord($str[$i]) >= 0x80 ) {
@@ -12,7 +13,8 @@ function encode_multibyte($str) {
     return $out;
 }
 
-function convert_to($in_str, $ch='%') {
+function convert_to($in_str, $ch='%')
+{
     $out_str = "";
     for ($i = 0; $i < strlen($in_str); $i++) {
         $int = ord($in_str[$i]);
@@ -25,7 +27,8 @@ function convert_to($in_str, $ch='%') {
     return str_replace('#', '%'.dechex(ord('#')), str_replace('&', '&amp;', stripslashes($out_str)));
 }
 
-function generate_path($path) {
+function generate_path($path)
+{
     $acc_path = array();
     $path = stripslashes($path);
     $acc_path[] = "<a href=\"".site_url('list/')."\">{$_SERVER["SERVER_NAME"]}</a>";
