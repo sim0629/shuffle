@@ -38,10 +38,10 @@ function generate_path($path)
         foreach( $array as $current_path ) {
             $acc[] = $current_path;
             $full_path = url_encode(implode("|", $acc));
-            $acc_path[] = "<a href=\"".site_url('list')."/$full_path\">$current_path</a>";
+            $acc_path[] = "<li><a href=\"".site_url('list')."/$full_path\">$current_path</a></li>";
         }
     }
-    return implode("/", $acc_path);
+    return implode('<li><span class="divider">/</span></li>', $acc_path);
 }
 
 function is_acceptable($ext)

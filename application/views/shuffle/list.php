@@ -3,7 +3,6 @@
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=<?php echo $current_encoding; ?>" />
 	<title>Shuffle!</title>
-	<link href="<?php echo base_url('css/gen.css') ?>" type="text/css" rel="stylesheet" />
 	<script type="text/javascript">
 	<!--? sajax_show_javascript(); ?-->
 
@@ -35,23 +34,26 @@
 	};
 	</script>
 	<script type="text/javascript" src="<?php echo base_url('script/keyDownHandler.js') ?>"></script>
+    <link type="text/css" rel="stylesheet" href="<?php echo base_url('css/bootstrap.css') ?>" />
 </head>
 
 <body>
-<h1>Shuffle!</h1>
-
-<h2>Path</h2>
-<div id="current-path">
-<?php echo $generated_path ?>
+<div class="container-fluid">
+<div class="page-header">
+    <h1>Shuffle!</h1>
 </div>
 
-<form id="listing" method="post">
+<ul class="breadcrumb">
+<?php echo $generated_path ?>
+</ul>
+
+<form method="post">
     <input type="hidden" value="<?php echo $mp3root ?>" name="root" />
     <input type="hidden" value="<?php echo $encoded_current_location ?>" name="currentdir" />
 
     <?php if(count($dirs) > 0): ?>
-    <h2>Directory</h2>
-    <ul id="dir-list">
+    <table class="table">
+        <colgroup><col width="30px" /><col width="*" /><col width="30px" /></colgroup>
         <?php foreach($dirs as $filename): ?>
         <?php 
             $l = empty($current_location)?$filename:($current_location.'|'.$filename);
@@ -59,16 +61,18 @@
             $filename = url_encode($filename);
             // refresh_player('$phpself?d=$f&l=$current_location');return false;
         ?>
-        <li><input type="checkbox" value="<?php echo $filename ?>" name="D:<?php echo $filename ?>" />
-        <a class="dir-name" href="<?php echo site_url('list/'.$l) ?>"><?php echo url_decode($filename) ?></a>
-        <a class="open-external" href="<?php echo site_url('play') ?>" target="player">N</a></li>
+        <tr>
+            <td><input type="checkbox" value="<?php echo $filename ?>" name="D:<?php echo $filename ?>" /></td>
+            <td><a href="<?php echo site_url('list/'.$l) ?>"><?php echo url_decode($filename) ?></a></td>
+            <td><a href="<?php echo site_url('play') ?>" target="player"><i class="icon-play"></i></a></td>
+        </tr>
         <?php endforeach ?>
-    </ul>
+    </table>
     <?php endif ?>
 
     <?php if(count($files) > 0): ?>
-    <h2>Files</h2>
-    <ul id="file-list">
+    <table class="table">
+        <colgroup><col width="30px" /><col width="*" /><col width="30px" /><col width="30px" /></colgroup>
         <?php foreach($files as $f): ?>
         <?php
             $pathinfo = pathinfo($f);
@@ -79,21 +83,22 @@
             $filepar = url_encode(stripslashes($filepar));
             $filepar = strtr($filepar, array('#'=>'%'.dechex(ord('#')), '&'=>'%26'));
         ?>
-        <li>
-            <input type="checkbox" value="<?php echo $filepar ?>" name="F:<?php echo $filepar?>" />
-            <a class="open-external" onclick="refresh_player('<?php echo site_url('play/'.$filepar) ?>');return false;"><?php echo $filename ?></a>
-            <a onclick="parent.player.add('<?php echo escape_singlequote(url_decode($pathinfo['filename'])) ?>','<?php echo escape_singlequote(convert_to($mp3url."/".$f)) ?>');return false;">A</a>
-            <a href="<?php echo convert_to($mp3url."/".$f) ?>">D</a>
-        </li>
+        <tr>
+            <td><input type="checkbox" value="<?php echo $filepar ?>" name="F:<?php echo $filepar?>" /></td>
+            <td><a onclick="refresh_player('<?php echo site_url('play/'.$filepar) ?>');return false;"><?php echo $filename ?></a></td>
+            <td><a onclick="parent.player.add('<?php echo escape_singlequote(url_decode($pathinfo['filename'])) ?>','<?php echo escape_singlequote(convert_to($mp3url."/".$f)) ?>');return false;"><i class="icon-plus"></i></a></td>
+            <td><a href="<?php echo convert_to($mp3url."/".$f) ?>"><i class="icon-download"></i></a></td>
+        </tr>
         <?php endforeach ?>
-    </ul>
+    </table>
     <?php endif ?>
 
-    <div id="buttons">
+    <div>
         <input type="submit" name="playAll" onclick="post('playAll', '<?php echo $current_location ?>');return false;" value="PlayAll" />
         <input type="submit" name="playCurrent" onclick="post('playCurrent', '<?php echo $current_location ?>');return false;" value="PlayCurrent" />
         <input type="submit" name="playSelected" onclick="post('playSelected', '<?php echo $current_location ?>');return false;" value="PlaySelected" />
     </div>
 </form>
+</div>
 </body>
 </html>
