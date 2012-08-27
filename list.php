@@ -3,7 +3,6 @@
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=<?echo $current_encoding;?>" />
 	<title>Shuffle!</title>
-	<link href="css/gen.css" type="text/css" rel="stylesheet" />
 	<script type="text/javascript">
 	<? sajax_show_javascript(); ?>
 
@@ -35,28 +34,33 @@
 	};
 	</script>
 	<script type="text/javascript" src="script/keyDownHandler.js"></script>
+	<link href="http://apt-get.kr/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
 </head>
 
 <body>
-<h1>Shuffle!</h1>
-
-<h2>Path</h2>
-<div id="current-path">
-<?= $generated_path ?>
+<div class="container-fluid">
+<div class="page-header">
+    <h1>Shuffle!</h1>
 </div>
 
-<form id="listing" method="post">
+<ul class="breadcrumb">
+<?php echo $generated_path ?>
+</ul>
+
+<form method="post">
     <input type="hidden" value="<?=$mp3root?>" name="root" />
     <input type="hidden" value="<?=$encoded_current_location?>" name="currentdir" />
 
     <?=$directory_section?>
     <?=$file_section?>
 
-    <div id="buttons">
+    <div>
         <input type="submit" name="playAll" onclick="post('playAll', '<?=$current_location?>');return false;" value="PlayAll" />
         <input type="submit" name="playCurrent" onclick="post('playCurrent', '<?=$current_location?>');return false;" value="PlayCurrent" />
         <input type="submit" name="playSelected" onclick="post('playSelected', '<?=$current_location?>');return false;" value="PlaySelected" />
     </div>
 </form>
+
+</div>
 </body>
 </html>

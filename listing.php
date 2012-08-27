@@ -138,24 +138,25 @@ HTMLSTART;
 
     $directory_section = '';
 	if( count($dirs) > 0 ) {
-		$directory_section .= "<h2>Directory</h2>\n";
-		$directory_section .= "<ul id=\"dir-list\">\n";
+		$directory_section .= '<table class="table"><colgroup><col width="30px" /><col width="*" /><col width="30px" /></colgroup>';
 		foreach( $dirs as $f ) {
 			$l = empty($current_location)?$f:($current_location.'/'.$f);
 			$l = str_replace('#', '%'.dechex(ord('#')), str_replace('&', '%26', $l));
 			$ll = empty($current_location)?"":$current_location;
 			$f = urlencode($f);
-			$directory_section .= " <li><input type=\"checkbox\" value=\"$f\" name=\"D:$f\" />";
-			$directory_section .= " <a class=\"dir-name\" href=\"$phpself?l=$l\">".urldecode($f)."</a>";
-			$directory_section .= " <a class=\"open-external\" onclick=\"refresh_player('$phpself?d=$f&l=$ll');return false;\">N</a></li>\n";
+
+            $directory_section .= '<tr>';
+			$directory_section .= "<td><input type=\"checkbox\" value=\"$f\" name=\"D:$f\" /></td>";
+			$directory_section .= "<td><a class=\"dir-name\" href=\"$phpself?l=$l\">".urldecode($f)."</a></td>";
+			$directory_section .= "<td><a class=\"open-external\" onclick=\"refresh_player('$phpself?d=$f&l=$ll');return false;\"><i class=\"icon-play\"></i></a></td>";
+            $directory_section .= '</tr>';
 		}
-		$directory_section .= "</ul>\n";
+		$directory_section .= '</table>';
 	}
 
     $file_section = '';
 	if( count($files) > 0 ) {
-		$file_section .= "<h2>Files</h2>\n";
-		$file_section .= "<ul id=\"file-list\">\n";
+		$file_section .= '<table class="table"><colgroup><col width="30px" /><col width="*" /><col width="30px" /><col width="30px" /></colgroup>';
 		foreach( $files as $f ) {
 			$pathinfo = pathinfo(urlencode($f));
 			if( is_acceptable(strtolower($pathinfo['extension'])) ) {
@@ -163,13 +164,15 @@ HTMLSTART;
 				$filepar = empty($current_location)?$filename:($current_location.'/'.$filename);
 				$filepar = urlencode(stripslashes($filepar));
 				$filepar = str_replace('#', '%'.dechex(ord('#')), str_replace('&', '%26', $filepar));
-				$file_section .= " <li><input type=\"checkbox\" value=\"$filepar\" name=\"F:$filepar\" />";
-				$file_section .= " <a class=\"open-external\" onclick=\"refresh_player('$phpself?mp3=$filepar');return false;\">$filename</a>\n";
-				$file_section .= " <a onclick=\"parent.player.add('".str_replace("'", "\\'", urldecode($pathinfo['filename']))."','".str_replace("'","\\'",convert_to($mp3url."/".$f))."');return false;\">A</a>\n";
-				$file_section .= ' <a href="'.convert_to($mp3url."/".$f).'">D</a></li>'."\n";
+                $file_section .= '<tr>';
+				$file_section .= "<td><input type=\"checkbox\" value=\"$filepar\" name=\"F:$filepar\" /></td>";
+				$file_section .= "<td><a class=\"open-external\" onclick=\"refresh_player('$phpself?mp3=$filepar');return false;\">$filename</a></td>";
+				$file_section .= "<td><a onclick=\"parent.player.add('".str_replace("'", "\\'", urldecode($pathinfo['filename']))."','".str_replace("'","\\'",convert_to($mp3url."/".$f))."');return false;\"><i class=\"icon-plus\"></i></a></td>";
+				$file_section .= '<td><a href="'.convert_to($mp3url."/".$f).'"><i class="icon-download"></i></a></td>';
+                $file_section .= '</tr>';
 			}
 		}
-		$file_section .= "</ul>\n";
+		$file_section .= '</table>';
 	}
 
     $encoded_current_location = convert_to($current_location);
@@ -331,10 +334,10 @@ function generate_path($path, $phpself) {
 		foreach( $array as $elem ) {
 			array_push($acc, $elem);
 			$ac = convert_to(implode("/", $acc));
-			array_push($s, "<a href=\"$phpself?l=$ac\">$elem</a>");
+			array_push($s, "<li><a href=\"$phpself?l=$ac\">$elem</a></li>");
 		}
 	}
-	return implode("/", $s);
+	return implode('<li><span class="divider">/</span></li>', $s);
 }
 
 function is_acceptable( $ext ) {
