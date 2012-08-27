@@ -34,7 +34,7 @@
 	};
 	</script>
 	<script type="text/javascript" src="script/keyDownHandler.js"></script>
-	<link href="http://apt-get.kr/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+	<link href="css/bootstrap.css" type="text/css" rel="stylesheet" />
 </head>
 
 <body>
