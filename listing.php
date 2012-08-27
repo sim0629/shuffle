@@ -65,7 +65,7 @@ if( !empty($_GET['d']) ) {
 if( !empty($_GET['mp3']) ) { // play mp3
 	$s = stripslashes($_GET['mp3']);
 	//$mp3 = encode_multibyte(rawurlencode(iconv($current_encoding, 'UTF-8//IGNORE', MUSIC_URL.$_GET['mp3'].'.mp3')));
-	$mp3 = encode_multibyte(iconv($current_encoding, 'UTF-8//IGNORE', MUSIC_URL.$_GET['mp3'].'.mp3'));
+	$mp3 = convert_to(MUSIC_URL.$_GET['mp3'].'.mp3');
 	$s .= <<<HTMLSTART
 <div id="mp3_div"><a href="http://www.macromedia.com/go/getflashplayer">Get the Flash Player</a> to see this player.</div>
         <script src="/app/mediaplayer/jwplayer.js"></script>
@@ -172,13 +172,20 @@ HTMLSTART;
 		$file_section .= "</ul>\n";
 	}
 
-    $encoded_current_location = encode_multibyte($current_location);
+    $encoded_current_location = convert_to($current_location);
 
 	include 'list.php';
 }
 
 // FUNCTION DEFINITION
 function convert_to($in_str, $ch = '%') {
+	$translate = array(
+		'%' => '%' . dechex(ord('%')),
+		'#' => '%' . dechex(ord('#')),
+		'&' => '&amp;',
+	);
+	$in_str = strtr($in_str, $translate);
+
     $out_str = "";
 	for ($i = 0; $i < strlen($in_str); $i++) {
 		$int = ord($in_str[$i]);
@@ -188,7 +195,7 @@ function convert_to($in_str, $ch = '%') {
 			$out_str = $out_str . $ch . dechex($int);
 		}
 	}
-	return str_replace('#', '%'.dechex(ord('#')), str_replace('&', '&amp;', stripslashes($out_str)));
+	return stripslashes($out_str);
 }
 
 function decode($str) {
@@ -256,7 +263,11 @@ function listing($file_handle, $path, $url, $rel, $prune = false) {
 		}
 		$pathinfo = pathinfo(urlencode($file));
 		if( is_array($pathinfo) && !empty($pathinfo['extension']) && is_acceptable(strtolower($pathinfo['extension'])) ) {
-			fwrite($file_handle, "  <track>\n   <title>".str_replace('#', '%'.dechex(ord('#')), str_replace('&', '&amp;', urldecode($pathinfo['filename'])))."</title>\n   <location>".convert_to($url.'/'.$file)."</location>\n  </track>\n");
+			$translate = array(
+				'&' => '&amp;',
+				'#' => '%' . dechex(ord('#')),
+			);
+			fwrite($file_handle, "  <track>\n   <title>".strtr(urldecode($pathinfo['filename']), $translate)."</title>\n   <location>".convert_to($url.'/'.$file)."</location>\n  </track>\n");
 		}
 	}
 }
