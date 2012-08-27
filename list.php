@@ -47,7 +47,7 @@
 <?php echo $generated_path ?>
 </ul>
 
-<form method="post">
+<form method="post" id="listing">
     <input type="hidden" value="<?=$mp3root?>" name="root" />
     <input type="hidden" value="<?=$encoded_current_location?>" name="currentdir" />
 
