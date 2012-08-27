@@ -35,14 +35,26 @@
 	</script>
 	<script type="text/javascript" src="script/keyDownHandler.js"></script>
 	<link href="css/bootstrap.css" type="text/css" rel="stylesheet" />
+    <style>
+    body { padding-top: 45px; }
+    </style>
 </head>
 
 <body>
-<div class="container-fluid">
-<div class="page-header">
-    <h1>Shuffle!</h1>
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <div class="brand">Shuffle!</div>
+            <ul class="nav pull-right">
+                <li><a onclick="post('playAll', '<?=$current_location?>');return false;">All</a></li>
+                <li><a onclick="post('playCurrent', '<?=$current_location?>');return false;">Current</a></li>
+                <li><a onclick="post('playSelected', '<?=$current_location?>');return false;">Selected</a></li>
+            </ul>
+        </div>
+    </div>
 </div>
 
+<div class="container-fluid">
 <ul class="breadcrumb">
 <?php echo $generated_path ?>
 </ul>
@@ -55,9 +67,6 @@
     <?=$file_section?>
 
     <div>
-        <input type="submit" name="playAll" onclick="post('playAll', '<?=$current_location?>');return false;" value="PlayAll" />
-        <input type="submit" name="playCurrent" onclick="post('playCurrent', '<?=$current_location?>');return false;" value="PlayCurrent" />
-        <input type="submit" name="playSelected" onclick="post('playSelected', '<?=$current_location?>');return false;" value="PlaySelected" />
     </div>
 </form>
 
