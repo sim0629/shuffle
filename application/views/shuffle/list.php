@@ -10,7 +10,7 @@
 		if( parent.player )
 			parent.player.location.href = path;
 		else
-			window.open(path, 'w', 'width=400,height=420,resizable=no');
+			window.open(path, 'player', 'width=400,height=420,resizable=no');
 	}
 	function post(r, li) {
 		var l = document.getElementById('listing');
