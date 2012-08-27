@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width" />
 	<meta http-equiv="Content-type" content="text/html; charset=<?echo $current_encoding;?>" />
 	<title>Shuffle!</title>
 	<script type="text/javascript">
@@ -9,8 +10,9 @@
 	function refresh_player(path) {
 		if( parent.player )
 			parent.player.location.href = path;
-		else
-			window.open(path, 'w', 'width=400,height=420,resizable=no');
+		else {
+			window.open(path, 'player', 'width=400,height=420,resizable=no');
+        }
 	}
 	function post(r, li) {
 		var l = document.getElementById('listing');
@@ -24,16 +26,9 @@
 		sajax_request_type = "POST";
 		x_on_post(r, l.root.value, l.currentdir.value, a.join('*'), li, refresh_player);
 	}
-
-	window.onload = function() {
-		var a = document.getElementsByTagName("a");
-		for( var i in a ) {
-			if( a[i].style )
-				a[i].style.cursor = 'pointer';
-		}
-	};
 	</script>
 	<script type="text/javascript" src="script/keyDownHandler.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
 	<link href="css/bootstrap.css" type="text/css" rel="stylesheet" />
     <style>
     body { padding-top: 45px; }
@@ -46,9 +41,9 @@
         <div class="container-fluid">
             <div class="brand">Shuffle!</div>
             <ul class="nav pull-right">
-                <li><a onclick="post('playAll', '<?=$current_location?>');return false;">All</a></li>
-                <li><a onclick="post('playCurrent', '<?=$current_location?>');return false;">Current</a></li>
-                <li><a onclick="post('playSelected', '<?=$current_location?>');return false;">Selected</a></li>
+                <li><a class="menu-all">All</a></li>
+                <li><a class="menu-current">Current</a></li>
+                <li><a class="menu-selected">Selected</a></li>
             </ul>
         </div>
     </div>
@@ -71,5 +66,28 @@
 </form>
 
 </div>
+
+<script>
+$(function() {
+    var current_location = '<?php echo str_replace("'", "\\'", $current_location); ?>';
+
+    $('.menu-all').click(function(e) {
+        post('playAll', current_location);
+        e.preventDefault();
+    });
+
+    $('.menu-current').click(function(e) {
+        post('playCurrent', current_location);
+        e.preventDefault();
+    });
+
+    $('.menu-selected').click(function(e) {
+        post('playSelected', current_location);
+        e.preventDefault();
+    });
+
+    $('a').css('cursor', 'pointer');
+});
+</script>
 </body>
 </html>
