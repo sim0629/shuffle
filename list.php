@@ -28,10 +28,11 @@
 	}
 	</script>
 	<script type="text/javascript" src="script/keyDownHandler.js"></script>
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+	<script type="text/javascript" src="script/jquery-latest.min.js"></script>
 	<link href="css/bootstrap.css" type="text/css" rel="stylesheet" />
     <style>
     body { padding-top: 45px; }
+    a { cursor: pointer; }
     </style>
 </head>
 
@@ -69,7 +70,9 @@
 
 <script>
 $(function() {
-    var current_location = '<?php echo str_replace("'", "\\'", $current_location); ?>';
+    var mp3root = "<?php echo $mp3root; ?>";
+    var current_location = "<?php echo $current_location; ?>";
+    var encoded_current_location = "<?php echo $encoded_current_location; ?>";
 
     $('.menu-all').click(function(e) {
         post('playAll', current_location);
@@ -85,8 +88,6 @@ $(function() {
         post('playSelected', current_location);
         e.preventDefault();
     });
-
-    $('a').css('cursor', 'pointer');
 });
 </script>
 </body>
