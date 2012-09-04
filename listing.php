@@ -143,13 +143,15 @@ HTMLSTART;
 			$l = empty($current_location)?$f:($current_location.'/'.$f);
 			$l = str_replace('#', '%'.dechex(ord('#')), str_replace('&', '%26', $l));
 			$ll = empty($current_location)?"":$current_location;
-			$f = urlencode($f);
+			$encoded_f = urlencode($f);
 
-            $directory_section .= '<tr class="item-dir">';
-			$directory_section .= '<td><input class="dir-checkbox" type="checkbox" value="'.$f.'" name="D:'.$f.'" /></td>';
-			$directory_section .= '<td><a class="dir-name" href="'.$phpself.'?l='.$l.'">'.urldecode($f).'</a></td>';
-			$directory_section .= '<td><a class="open-external" onclick="refresh_player(\''.$phpself.'?d='.$f.'&l='.$ll.'\');return false;"><i class="icon-play"></i></a></td>';
-            $directory_section .= '</tr>';
+            $directory_section .= <<<HTMLSTART
+            <tr class="item-dir">
+                <td><input class="dir-checkbox" type="checkbox" value="{$encoded_f}" name="D:{$encoded_f}" /></td>
+                <td><a class="dir-name" href="{$phpself}?l={$l}">{$f}</a></td>
+                <td><a class="open-external" onclick="refresh_player('{$phpself}?d={$encoded_f}&l={$ll}');return false;"><i class="icon-play"></i></a></td>
+            </tr>
+HTMLSTART;
 		}
 		$directory_section .= '</table>';
 	}
@@ -164,12 +166,18 @@ HTMLSTART;
 				$filepar = empty($current_location)?$filename:($current_location.'/'.$filename);
 				$filepar = urlencode(stripslashes($filepar));
 				$filepar = str_replace('#', '%'.dechex(ord('#')), str_replace('&', '%26', $filepar));
-                $file_section .= '<tr class="item-file">';
-				$file_section .= '<td><input class="file-checkbox" type="checkbox" value="'.$filepar.'" name="F:'.$filepar.'" /></td>';
-				$file_section .= '<td><a class="open-external" onclick="refresh_player(\''.$phpself.'?mp3='.$filepar.'\');return false;">'.$filename.'</a></td>';
-				$file_section .= '<td><a onclick="parent.player.add(\''.str_replace("'", "\\'", urldecode($pathinfo['filename']))."','".str_replace("'","\\'",convert_to($mp3url."/".$f)).'\');return false;"><i class="icon-plus"></i></a></td>';
-				$file_section .= '<td><a href="'.convert_to($mp3url."/".$f).'"><i class="icon-download"></i></a></td>';
-                $file_section .= '</tr>';
+                $file_playeradd1 = str_replace("'", "\\'", urldecode($pathinfo['filename']));
+                $file_playeradd2 = str_replace("'","\\'",convert_to($mp3url."/".$f));
+                $file_download = convert_to($mp3url."/".$f);
+
+                $file_section .= <<<HTMLSTART
+                <tr class="item-file">
+                    <td><input class="file-checkbox" type="checkbox" value="{$filepar}" name="F:{$filepar}" /></td>
+                    <td><a class="open-external" onclick="refresh_player('{$phpself}?mp3={$filepar}');return false;">{$filename}</a></td>
+                    <td><a onclick="parent.player.add('{$file_playeradd1}','{$file_playeradd2}');return false;"><i class="icon-plus"></i></a></td>
+                    <td><a href="{$file_download}"><i class="icon-download"></i></a></td>
+                </tr>
+HTMLSTART;
 			}
 		}
 		$file_section .= '</table>';

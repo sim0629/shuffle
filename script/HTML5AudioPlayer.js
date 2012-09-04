@@ -60,7 +60,7 @@ var volume = 0.8;
 var timerDuration = 30;
 var historyFactor = 0.3;
 var historyManager = new History(list.length, historyFactor);
-Object.prototype.sendEvent = function(method, argument) {
+$('audio').get(0).sendEvent = function(method, argument) {
 	if( typeof(method) == 'string' ) {
 		if( method == 'play' ) {
 			if( $('#mediaplayer')[0].paused )
@@ -71,7 +71,7 @@ Object.prototype.sendEvent = function(method, argument) {
 			eval( method + '()' );
 		}
 	}
-};
+}
 
 function displayTime(){
 	var time = $('#mediaplayer')[0].currentTime;
