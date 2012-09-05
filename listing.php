@@ -82,7 +82,7 @@ if( !empty($_GET['mp3']) ) { // play mp3
             });
 	</script>
 HTMLSTART;
-	include 'swfplayer.php';
+	include 'template/swfplayer.html';
 } else if( $listPlay ) {
     $t = time();
 	$s = <<<HTMLSTART
@@ -107,7 +107,7 @@ HTMLSTART;
         so.write("mp3_div");
     </script>
 HTMLSTART;
-	include $supportMp3?'html5player.html':'swfplayer.php';
+	include $supportMp3?'template/html5player.html':'template/swfplayer.html';
 } else { // listing directory
 	$phpself = $_SERVER['PHP_SELF'];
 	$mp3root = MUSIC_URL;
@@ -185,7 +185,7 @@ HTMLSTART;
 
     $encoded_current_location = convert_to($current_location);
 
-	include 'list.php';
+	include 'template/listing.html';
 }
 
 // FUNCTION DEFINITION
