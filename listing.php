@@ -38,7 +38,7 @@ $filename	= LISTING_FILENAME;
 $loadfile	= 'listing.xml.php';
 $shuf		= (empty($_GET['sh']))?'false':'true';
 $listPlay	= (!empty($_GET['r']) || !empty($_GET['sh']) || !empty($_GET['d']));
-$supportMp3	= (ereg( '(Chrome|Safari)', $_SERVER['HTTP_USER_AGENT'] ));
+$supportMp3	= (preg_match( '/(Chrome|Safari)/', $_SERVER['HTTP_USER_AGENT'] ));
 
 if( !empty($_GET['d']) ) {
 	if( $_GET['d'] == '..' ) {
@@ -349,7 +349,7 @@ function generate_path($path, $phpself) {
 }
 
 function is_acceptable( $ext ) {
-	$HTML5 = (ereg( '(Chrome|Safari)', $_SERVER['HTTP_USER_AGENT'] ));
+	$HTML5 = (preg_match( '/(Chrome|Safari)/', $_SERVER['HTTP_USER_AGENT'] ));
 	if( $HTML5 )
 		return $ext == 'mp3' || $ext == 'ogg';
 	else

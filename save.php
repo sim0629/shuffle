@@ -32,4 +32,3 @@ XML_START;
 
 	fclose($file_handle);
 }
-?>
